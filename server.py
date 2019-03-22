@@ -7,8 +7,9 @@ clients = dict()
 
 
 class Client:
-    def __init__(self, name):
+    def __init__(self, name, avatar):
         self.name = name
+        self.avatar = avatar
 
 async def handle_messages(websocket):
     while True:
@@ -23,16 +24,15 @@ async def handle_messages(websocket):
 
         others = [socket for socket in clients if socket != websocket]
         if others:
-            packet = json.dumps(dict(type='message', author=clients[websocket].name, message=message))
+            packet = json.dumps(dict(type='message', author=clients[websocket].name, avatar=clients[websocket].avatar, message=message))
             logger.info(packet)
             await asyncio.wait([socket.send(packet) for socket in others])
 
 
 async def handle_client(websocket, path):
     packet = json.loads(await websocket.recv())
-    clients[websocket] = Client(packet['name'])
-    
-    logger.info(packet['avatar'])
+    clients[websocket] = Client(packet['name'], packet['avatar'])
+
     logger.info(f'New connection from {clients[websocket].name}')
 
     try:
