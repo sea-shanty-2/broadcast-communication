@@ -3,7 +3,7 @@ import asyncio
 import websockets
 from loguru import logger
 
-clients = set()
+clients = dict()
 
 
 async def handle_messages(websocket):
@@ -14,17 +14,19 @@ async def handle_messages(websocket):
 
         others = [socket for socket in clients if socket != websocket]
         if others:
-            await asyncio.wait([socket.send(message) for socket in others])
+            name = clients[websocket]
+            await asyncio.wait([socket.send(f'{name},{message}') for socket in others])
 
 
 async def handle_client(websocket, path):
-    clients.add(websocket)
+    name = (await websocket.recv()).strip()
+    clients[websocket] = name
 
-    logger.info('New connection')
+    logger.info(f'New connection from {name}')
 
     try:
         await handle_messages(websocket)
     except websockets.ConnectionClosed:
-        clients.remove(websocket)
+        del clients[websocket]
 
         logger.info('Remove socket')
