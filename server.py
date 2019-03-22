@@ -31,7 +31,8 @@ async def handle_messages(websocket):
 async def handle_client(websocket, path):
     packet = json.loads(await websocket.recv())
     clients[websocket] = Client(packet['name'])
-
+    
+    logger.info(packet['avatar'])
     logger.info(f'New connection from {clients[websocket].name}')
 
     try:
