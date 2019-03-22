@@ -1,5 +1,4 @@
 import asyncio
-import json
 
 import websockets
 from loguru import logger
@@ -8,7 +7,6 @@ clients = set()
 
 
 async def handle_messages(websocket):
-    # Receive messages
     while True:
         message = (await websocket.recv()).strip()
 
@@ -21,6 +19,8 @@ async def handle_messages(websocket):
 
 async def handle_client(websocket, path):
     clients.add(websocket)
+
+    logger.info('New connection')
 
     try:
         await handle_messages(websocket)
