@@ -1,43 +1,46 @@
 import asyncio
-import json
+
 import websockets
 from loguru import logger
 
-clients = dict()
+from client import Client
 
 
-class Client:
-    def __init__(self, name, avatar):
-        self.name = name
-        self.avatar = avatar
+class Server:
+    def __init__(self, address='0.0.0.0', port=8765):
+        self.address = address
+        self.port = port
+        self.clients = dict()
 
-async def handle_messages(websocket):
-    while True:
-        packet = json.loads(await websocket.recv())
-        logger.info(f'Received {packet}')
+    def serve(self):
+        start_server = websockets.serve(self.handle_client, '0.0.0.0', 8765)
 
+        asyncio.get_event_loop().run_until_complete(start_server)
+        asyncio.get_event_loop().run_forever()
 
-        if packet['type'] != 'message':
-            continue
+    async def handle_client(self, websocket, path):
+        client = Client(self, websocket)
+        self.add_client(client)
 
-        message = packet['message']
+        logger.info(f'New connection from {websocket}')
 
-        others = [socket for socket in clients if socket != websocket]
-        if others:
-            packet = json.dumps(dict(type='message', author=clients[websocket].name, avatar=clients[websocket].avatar, message=message))
-            logger.info(packet)
-            await asyncio.wait([socket.send(packet) for socket in others])
+        try:
+            await client.handle_messages()
+        except websockets.ConnectionClosed:
+            self.remove_client(client)
 
+            logger.info('Remove socket')
 
-async def handle_client(websocket, path):
-    packet = json.loads(await websocket.recv())
-    clients[websocket] = Client(packet['name'], packet['avatar'])
+    async def broadcast(self, packet, channel, exclude=None):
+        if exclude is None:
+            exclude = []
 
-    logger.info(f'New connection from {clients[websocket].name}')
+        sockets = [sock for sock, client in self.clients.items() if client.channel == channel and client not in exclude]
+        if sockets:
+            await asyncio.wait([socket.send(packet) for socket in sockets])
 
-    try:
-        await handle_messages(websocket)
-    except websockets.ConnectionClosed:
-        del clients[websocket]
+    def add_client(self, client):
+        self.clients[client.websocket] = client
 
-        logger.info('Remove socket')
+    def remove_client(self, client):
+        del self.clients[client.websocket]
