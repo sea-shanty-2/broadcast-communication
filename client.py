@@ -17,7 +17,8 @@ class Client:
 
     async def handle_messages(self):
         handlers = {'message': self.handle_chat_message,
-                    'identity': self.handle_identity}
+                    'identity': self.handle_identity,
+                    'reaction': self.handle_reaction}
 
         while True:
             packet = json.loads(await self.websocket.recv())
@@ -30,6 +31,14 @@ class Client:
     async def handle_chat_message(self, packet):
         packet = json.dumps(dict(type='message', author=self.name, avatar=self.avatar, message=packet['message']))
         await self.server.broadcast(packet, self.channel, [self])
+
+    async def handle_reaction(self, packet):
+        reaction = packet['reaction']
+
+        if reaction in self.server.ALLOWED_EMOJIS:
+            packet = json.dumps(dict(type='reaction', reaction=reaction))
+
+            await self.server.broadcast(packet, self.channel, [self])
 
     async def handle_identity(self, packet):
         self.name = packet['name']

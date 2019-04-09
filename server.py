@@ -7,6 +7,8 @@ from client import Client
 
 
 class Server:
+    ALLOWED_EMOJIS = "👍👎❤😂😂😂🔥"
+
     def __init__(self, address='0.0.0.0', port=8765):
         self.address = address
         self.port = port
