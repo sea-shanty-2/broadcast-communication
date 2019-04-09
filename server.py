@@ -7,7 +7,7 @@ from client import Client
 
 
 class Server:
-    ALLOWED_EMOJIS = "👍👎❤😂😂😂🔥"
+    ALLOWED_EMOJIS = [u'\U0001F44E', u'\U0001F44D', u'\U0001F602', u'\U00002764']
 
     def __init__(self, address='0.0.0.0', port=8765):
         self.address = address
@@ -28,10 +28,10 @@ class Server:
 
         try:
             await client.handle_messages()
-        except websockets.ConnectionClosed:
+        except Exception as exc:
             self.remove_client(client)
 
-            logger.info('Remove socket')
+            logger.info(f'Remove socket ({exc})')
 
     async def broadcast(self, packet, channel, exclude=None):
         if exclude is None:
