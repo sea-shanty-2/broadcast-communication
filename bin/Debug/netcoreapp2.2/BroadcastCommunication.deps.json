@@ -1,0 +1,41 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.2",
+    "signature": "0461c3b75d67c6ee2dadd52946ee7f93ea28bc18"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.2": {
+      "BroadcastCommunication/1.0.0": {
+        "dependencies": {
+          "Fleck": "1.1.0"
+        },
+        "runtime": {
+          "BroadcastCommunication.dll": {}
+        }
+      },
+      "Fleck/1.1.0": {
+        "runtime": {
+          "lib/netcoreapp2.0/Fleck.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "BroadcastCommunication/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Fleck/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-6UYtXNPIv43QgoPOBFb6ycNc5Nr5L/bO9llUqz82eVyrktvroL59hnHJ9zLUxO3TgpcMSMS5/NKpWVbHHwwSdQ==",
+      "path": "fleck/1.1.0",
+      "hashPath": "fleck.1.1.0.nupkg.sha512"
+    }
+  }
+}
