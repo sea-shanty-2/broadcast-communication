@@ -23,7 +23,7 @@ namespace BroadcastCommunication
                 { Emoji.Fire, Polarity.Positive},
                 { Emoji.Joy, Polarity.Positive},
                 { Emoji.Thumbsup, Polarity.Positive},
-                { Emoji.B, Polarity.Positive},
+                { Emoji.Heart, Polarity.Positive},
                 { Emoji.Eggplant, Polarity.Positive},
                 { Emoji.Angry, Polarity.Negative},
                 { Emoji.Thumbsdown, Polarity.Negative},
