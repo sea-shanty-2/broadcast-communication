@@ -1,6 +1,6 @@
 namespace BroadcastCommunication
 {
-    internal interface IWebSocketClient
+    public interface IWebSocketClient
     {
         string Name { get; }
         string Channel { get; }

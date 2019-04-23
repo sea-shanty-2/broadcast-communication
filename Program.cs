@@ -8,7 +8,7 @@ namespace BroadcastCommunication
     {
         static void Main(string[] args)
         {
-            var server = new WebSocketServer("ws://0.0.0.0:5001") { RestartAfterListenError = true };
+            var server = new WebSocketServer("ws://0.0.0.0:5004") { RestartAfterListenError = true };
             server.Start();
             
             // TODO: Run some background processes/cleaning
