@@ -43,7 +43,7 @@ namespace BroadcastCommunication
         {
             var serialized = JsonConvert.SerializeObject(packet);
             
-            foreach (var (socket, _) in _clientMap.Where(item => !excludedClients.Contains(item.Value)))
+            foreach (var (socket, _) in _clientMap.Where(item => !excludedClients.Contains(item.Value) && item.Value.Channel.Equals(channel)))
                 socket.Send(serialized);
         }
 

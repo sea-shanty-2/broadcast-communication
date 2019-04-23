@@ -13,7 +13,8 @@ namespace BroadcastCommunication
         public string Name { get; set; }
         public string Channel { get; set; }
         public string Avatar { get; set; }
-        
+        public bool Identified => Name != null && Channel != null && Avatar != null;
+
         private readonly ConcurrentDictionary<string, DateTime> _lastReaction;
         private readonly ConcurrentDictionary<string, DateTime> _lastChat;
         private readonly ConcurrentDictionary<string, Polarity> _channelPolarity;
@@ -61,6 +62,7 @@ namespace BroadcastCommunication
 
         private void HandleReactionPacket(JObject jsonObject)
         {
+            if (!Identified) return;
             _lastReaction.TryGetValue(Channel, out var time);
 
             var emoji = jsonObject["Reaction"].Value<string>();
@@ -72,6 +74,7 @@ namespace BroadcastCommunication
 
         private void HandleChatPacket(JObject jsonObject)
         {
+            if (!Identified) return;
             _lastChat.TryGetValue(Channel, out var time);
 
             if (DateTime.Now - time <= TimeSpan.FromMilliseconds(200)) return;
