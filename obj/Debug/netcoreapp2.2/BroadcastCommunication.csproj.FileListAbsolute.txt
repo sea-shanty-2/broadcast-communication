@@ -1,0 +1,11 @@
+/home/anders/Code/Git/BroadcastCommunication/bin/Debug/netcoreapp2.2/BroadcastCommunication.deps.json
+/home/anders/Code/Git/BroadcastCommunication/bin/Debug/netcoreapp2.2/BroadcastCommunication.runtimeconfig.json
+/home/anders/Code/Git/BroadcastCommunication/bin/Debug/netcoreapp2.2/BroadcastCommunication.runtimeconfig.dev.json
+/home/anders/Code/Git/BroadcastCommunication/bin/Debug/netcoreapp2.2/BroadcastCommunication.dll
+/home/anders/Code/Git/BroadcastCommunication/bin/Debug/netcoreapp2.2/BroadcastCommunication.pdb
+/home/anders/Code/Git/BroadcastCommunication/obj/Debug/netcoreapp2.2/BroadcastCommunication.csprojAssemblyReference.cache
+/home/anders/Code/Git/BroadcastCommunication/obj/Debug/netcoreapp2.2/BroadcastCommunication.csproj.CoreCompileInputs.cache
+/home/anders/Code/Git/BroadcastCommunication/obj/Debug/netcoreapp2.2/BroadcastCommunication.AssemblyInfoInputs.cache
+/home/anders/Code/Git/BroadcastCommunication/obj/Debug/netcoreapp2.2/BroadcastCommunication.AssemblyInfo.cs
+/home/anders/Code/Git/BroadcastCommunication/obj/Debug/netcoreapp2.2/BroadcastCommunication.dll
+/home/anders/Code/Git/BroadcastCommunication/obj/Debug/netcoreapp2.2/BroadcastCommunication.pdb

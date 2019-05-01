@@ -1,0 +1,57 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.2",
+    "signature": "61c37cb581beedff11cf0f0ca8dcc44d05a0e357"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.2": {
+      "BroadcastCommunication/1.0.0": {
+        "dependencies": {
+          "Fleck": "1.1.0",
+          "Newtonsoft.Json": "12.0.2-beta1"
+        },
+        "runtime": {
+          "BroadcastCommunication.dll": {}
+        }
+      },
+      "Fleck/1.1.0": {
+        "runtime": {
+          "lib/netcoreapp2.0/Fleck.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
+          }
+        }
+      },
+      "Newtonsoft.Json/12.0.2-beta1": {
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "12.0.0.0",
+            "fileVersion": "12.0.2.23131"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "BroadcastCommunication/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Fleck/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-6UYtXNPIv43QgoPOBFb6ycNc5Nr5L/bO9llUqz82eVyrktvroL59hnHJ9zLUxO3TgpcMSMS5/NKpWVbHHwwSdQ==",
+      "path": "fleck/1.1.0",
+      "hashPath": "fleck.1.1.0.nupkg.sha512"
+    },
+    "Newtonsoft.Json/12.0.2-beta1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-HRdPuw8qsV49lIqVHJZqriraVTYYYKTM+E+bOoPAr7J49wctTRoiF/jRnjYi3jIxudLTLpUTQY7v/7X/so61KQ==",
+      "path": "newtonsoft.json/12.0.2-beta1",
+      "hashPath": "newtonsoft.json.12.0.2-beta1.nupkg.sha512"
+    }
+  }
+}
