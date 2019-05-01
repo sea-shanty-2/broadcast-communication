@@ -1,3 +1,5 @@
+using BroadcastCommunication.Sockets;
+
 namespace BroadcastCommunication.Packet
 {
     public class MessagePacket : IPacket

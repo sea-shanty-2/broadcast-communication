@@ -1,4 +1,4 @@
-namespace BroadcastCommunication
+namespace BroadcastCommunication.Sockets
 {
     public interface IWebSocketClient
     {

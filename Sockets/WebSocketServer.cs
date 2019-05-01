@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using BroadcastCommunication.Packet;
 using Fleck;
 using J3QQ4;
 using Newtonsoft.Json;
 
-namespace BroadcastCommunication
+namespace BroadcastCommunication.Sockets
 {
     public class WebSocketServer : Fleck.WebSocketServer, IWebSocketServer
     {
@@ -65,16 +64,12 @@ namespace BroadcastCommunication
             var client = new WebSocketClient(this);
             socket.OnMessage = client.HandleMessage;
             _clientMap[socket] = client;
-            
-            Console.WriteLine("Connection opened");
         }
 
         private void ConnectionClosed(IWebSocketConnection socket)
         {
             if (_clientMap.ContainsKey(socket))
                 _clientMap.Remove(socket);
-            
-            Console.WriteLine("Connection closed");
         }
     }
 }

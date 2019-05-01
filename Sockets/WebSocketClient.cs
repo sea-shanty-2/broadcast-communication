@@ -2,11 +2,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using BroadcastCommunication.Packet;
-using Fleck;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace BroadcastCommunication
+namespace BroadcastCommunication.Sockets
 {
     class WebSocketClient : IWebSocketClient
     {

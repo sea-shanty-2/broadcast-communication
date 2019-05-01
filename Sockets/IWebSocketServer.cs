@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using BroadcastCommunication.Packet;
 
-namespace BroadcastCommunication
+namespace BroadcastCommunication.Sockets
 {
     public interface IWebSocketServer
     {
