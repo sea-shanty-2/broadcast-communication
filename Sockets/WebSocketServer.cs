@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using BroadcastCommunication.Packet;
 using Fleck;
 using J3QQ4;
@@ -14,8 +14,13 @@ namespace BroadcastCommunication.Sockets
         private readonly IDictionary<string, Polarity> _emojiPolarityMap;
         private readonly IDictionary<IWebSocketConnection, WebSocketClient> _clientMap;
 
-        public WebSocketServer(string location, bool supportDualStack = true) : base(location, supportDualStack)
+        public WebSocketServer(string location, bool supportDualStack = true, bool useSsl = false, string certFile = null) : base(useSsl ? $"wss://{location}" : $"ws://{location}", supportDualStack)
         {
+            if (useSsl && !string.IsNullOrWhiteSpace(certFile))
+            {
+                Certificate = new X509Certificate2(certFile);
+            }
+            
             _clientMap = new ConcurrentDictionary<IWebSocketConnection, WebSocketClient>();
             _emojiPolarityMap = new Dictionary<string, Polarity>
             {

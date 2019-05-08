@@ -1,7 +1,4 @@
-﻿using System;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using Fleck;
+﻿using System.Threading;
 using WebSocketServer = BroadcastCommunication.Sockets.WebSocketServer;
 
 namespace BroadcastCommunication
@@ -10,10 +7,9 @@ namespace BroadcastCommunication
     {
         static void Main(string[] args)
         {
-            var server = new WebSocketServer("wss://0.0.0.0:4040")
+            var server = new WebSocketServer("0.0.0.0:4040")
             {
-                RestartAfterListenError = true,
-                Certificate = new X509Certificate2("/certs/wss.pfx")
+                RestartAfterListenError = true
             };
             server.Start();
             
