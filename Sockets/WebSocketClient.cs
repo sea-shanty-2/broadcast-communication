@@ -18,7 +18,6 @@ namespace BroadcastCommunication.Sockets
 
         private readonly ConcurrentDictionary<IChannel, DateTime> _lastReaction;
         private readonly ConcurrentDictionary<IChannel, DateTime> _lastChat;
-        private readonly ConcurrentDictionary<IChannel, Polarity> _channelPolarity;
         private readonly IWebSocketServer _server;
 
         public WebSocketClient(IWebSocketServer webSocketServer, IWebSocketConnection socket)
@@ -28,7 +27,6 @@ namespace BroadcastCommunication.Sockets
             _server = webSocketServer;
             _lastReaction = new ConcurrentDictionary<IChannel, DateTime>();
             _lastChat = new ConcurrentDictionary<IChannel, DateTime>();
-            _channelPolarity = new ConcurrentDictionary<IChannel, Polarity>();
         }
 
         public void HandleMessage(string message)
@@ -78,7 +76,7 @@ namespace BroadcastCommunication.Sockets
             var emoji = jsonObject["Reaction"].Value<string>();
             if (!_server.IsEmojiAllowed(emoji) || DateTime.Now - time <= TimeSpan.FromMilliseconds(200)) return;
             Channel?.Broadcast(new ReactionPacket(emoji), new HashSet<IWebSocketClient> { this });
-            _channelPolarity[Channel] = _server.GetEmojiPolarity(emoji);
+            Channel?.Rate(_server.GetEmojiPolarity(emoji), this);
             _lastReaction[Channel] = DateTime.Now;
         }
 

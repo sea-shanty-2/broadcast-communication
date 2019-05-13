@@ -4,7 +4,7 @@ namespace BroadcastCommunication
 {
     public class EmojiNotAllowedException : Exception
     {
-        public string Emoji { get; }
+        private string Emoji { get; }
         
         public EmojiNotAllowedException(string emoji)
         {

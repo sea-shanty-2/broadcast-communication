@@ -15,7 +15,7 @@ namespace BroadcastCommunication
         
         public string Id { get; }
         public IWebSocketClient Owner { get; }
-        private int Sequence { get; set; } = 0;
+        private int Sequence { get; set; }
         public int NegativeRatings => _ratings.Values.Count(v => v.Equals(Polarity.Negative));
         public int PositiveRatings => _ratings.Values.Count(v => v.Equals(Polarity.Positive));
         
@@ -48,11 +48,14 @@ namespace BroadcastCommunication
 
         public int AddClient(IWebSocketClient client)
         {
-            this._clients.Add(client);
+            if (!_clients.Contains(client))
+            {
+                _clients.Add(client);
+            }
             
             if (!_sequenceIds.ContainsKey(client))
             {
-                _sequenceIds[client] = ++this.Sequence;
+                _sequenceIds[client] = this.Sequence++; // Owner is assigned id = 0
             }
 
             return _sequenceIds[client];
