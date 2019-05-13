@@ -7,13 +7,13 @@ namespace BroadcastCommunication.Packet
         public string Type => PacketType.Message;
         public string Message { get; }
         public string Author { get; }
-        public string Avatar { get; }
+        public int SequenceId { get; }
         
         public MessagePacket(string message, IWebSocketClient sender)
         {
             Message = message;
             Author = sender.Name;
-            Avatar = sender.Avatar;
+            SequenceId = sender.SequenceId;
         }
     }
 }

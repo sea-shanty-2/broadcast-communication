@@ -7,14 +7,25 @@ namespace BroadcastCommunication
     {
         static void Main(string[] args)
         {
-            var server = new WebSocketServer("0.0.0.0:4040")
+            var server = new WebSocketServer("ws://0.0.0.0:4040")
             {
                 RestartAfterListenError = true
             };
             server.Start();
             
-            // TODO: Run some background processes/cleaning
-            while (true) Thread.Sleep(1000);
+            // Continuously send ratings to gateway
+            while (true)
+            {
+                foreach (var channel in server.Channels)
+                {
+                    // channel.Id
+                    // channel.PositiveRatings
+                    // channel.NegativeRatings
+                    // Enjoy, Thomas!
+                }
+                
+                Thread.Sleep(10000);
+            }
         }
     }
 }

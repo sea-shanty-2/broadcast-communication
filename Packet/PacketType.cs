@@ -5,5 +5,6 @@ namespace BroadcastCommunication.Packet
         public const string Identity = "Identity";
         public const string Reaction = "Reaction";
         public const string Message = "Message";
+        public const string ChatState = "ChatState";
     }
 }

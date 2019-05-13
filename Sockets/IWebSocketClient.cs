@@ -1,10 +1,13 @@
+using Fleck;
+
 namespace BroadcastCommunication.Sockets
 {
     public interface IWebSocketClient
     {
         string Name { get; }
-        string Channel { get; }
-        string Avatar { get; }
+        IChannel Channel { get; }
+        IWebSocketConnection Socket { get; }
+        int SequenceId { get; }
         void HandleMessage(string message);
     }
 }

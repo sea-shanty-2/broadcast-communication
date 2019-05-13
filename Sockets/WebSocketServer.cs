@@ -12,16 +12,12 @@ namespace BroadcastCommunication.Sockets
     public class WebSocketServer : Fleck.WebSocketServer, IWebSocketServer
     {
         private readonly IDictionary<string, Polarity> _emojiPolarityMap;
-        private readonly IDictionary<IWebSocketConnection, WebSocketClient> _clientMap;
+        private readonly IDictionary<string, IChannel> _channels = new ConcurrentDictionary<string, IChannel>();
 
-        public WebSocketServer(string location, bool supportDualStack = true, bool useSsl = false, string certFile = null) : base(useSsl ? $"wss://{location}" : $"ws://{location}", supportDualStack)
+        public ICollection<IChannel> Channels => _channels.Keys;
+        
+        public WebSocketServer(string location, bool supportDualStack = true) : base(location, supportDualStack)
         {
-            if (useSsl && !string.IsNullOrWhiteSpace(certFile))
-            {
-                Certificate = new X509Certificate2(certFile);
-            }
-            
-            _clientMap = new ConcurrentDictionary<IWebSocketConnection, WebSocketClient>();
             _emojiPolarityMap = new Dictionary<string, Polarity>
             {
                 { Emoji.Fire, Polarity.Positive},
@@ -34,6 +30,17 @@ namespace BroadcastCommunication.Sockets
             };
         }
 
+
+        public IChannel GetOrJoinChannel(string channel, IWebSocketClient requester)
+        {
+            if (!_channels.ContainsKey(channel))
+            {
+                _channels[channel] = new Channel(channel, requester);
+            }
+
+            return _channels[channel];
+        }
+
         public void Start()
         {
             base.Start(socket =>
@@ -41,14 +48,6 @@ namespace BroadcastCommunication.Sockets
                 socket.OnClose = () => ConnectionClosed(socket);
                 socket.OnOpen = () => ConnectionOpened(socket);
             });
-        }
-
-        public void Broadcast(string channel, IPacket packet, ISet<IWebSocketClient> excludedClients)
-        {
-            var serialized = JsonConvert.SerializeObject(packet);
-            
-            foreach (var (socket, _) in _clientMap.Where(item => !excludedClients.Contains(item.Value) && item.Value.Channel.Equals(channel)))
-                socket.Send(serialized);
         }
 
         public bool IsEmojiAllowed(string emoji)
@@ -66,15 +65,13 @@ namespace BroadcastCommunication.Sockets
 
         private void ConnectionOpened(IWebSocketConnection socket)
         {
-            var client = new WebSocketClient(this);
+            var client = new WebSocketClient(this, socket);
             socket.OnMessage = client.HandleMessage;
-            _clientMap[socket] = client;
         }
 
         private void ConnectionClosed(IWebSocketConnection socket)
         {
-            if (_clientMap.ContainsKey(socket))
-                _clientMap.Remove(socket);
+            // TODO: Delete from channel?
         }
     }
 }
