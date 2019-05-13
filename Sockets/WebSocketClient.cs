@@ -65,7 +65,8 @@ namespace BroadcastCommunication.Sockets
 
         private void HandleChatStatePacket(JObject jsonObject)
         {
-            if (!Identified || this.Channel.Owner != this) return;
+            if (!Identified || Channel.Owner != this || Channel == null) return;
+            Channel.ChatEnabled = jsonObject["Enabled"].Value<bool>();
         }
 
         private void HandleReactionPacket(JObject jsonObject)
@@ -104,6 +105,12 @@ namespace BroadcastCommunication.Sockets
                 SequenceId = SequenceId,
                 Name = Name
             }));
+            
+            // If channel's chat is disabled, send to this chatter
+            if (!Channel.ChatEnabled)
+            {
+                Socket.Send(JsonConvert.SerializeObject(new ChatStatePacket {Enabled = Channel.ChatEnabled}));
+            }
         }
     }
 }

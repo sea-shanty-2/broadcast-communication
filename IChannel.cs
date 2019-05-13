@@ -12,6 +12,8 @@ namespace BroadcastCommunication
         void Broadcast(IPacket packet, ISet<IWebSocketClient> excludedClients);
         void Rate(Polarity rating, IWebSocketClient rater);
 
+        bool ChatEnabled { get; set; }
+        
         int PositiveRatings { get; }
         int NegativeRatings { get; }
         
