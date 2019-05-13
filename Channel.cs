@@ -9,7 +9,8 @@ namespace BroadcastCommunication
 {
     public class Channel : IChannel
     {
-        private readonly IDictionary<IWebSocketClient, int> _clients = new ConcurrentDictionary<IWebSocketClient, int>();
+        private readonly ISet<IWebSocketClient> _clients = new HashSet<IWebSocketClient>();
+        private readonly IDictionary<IWebSocketClient, int> _sequenceIds = new ConcurrentDictionary<IWebSocketClient, int>();
         private readonly IDictionary<IWebSocketClient, Polarity> _ratings = new ConcurrentDictionary<IWebSocketClient, Polarity>();
         
         public string Id { get; }
@@ -33,13 +34,13 @@ namespace BroadcastCommunication
         {
             var serialized = JsonConvert.SerializeObject(packet);
             
-            foreach (var (client, _) in _clients.Where(item => !excludedClients.Contains(item.Key)))
+            foreach (var client in _clients.Where(item => !excludedClients.Contains(item)))
                 client.Socket.Send(serialized);
         }
 
         public void RemoveClient(IWebSocketClient client)
         {
-            if (_clients.ContainsKey(client))
+            if (_clients.Contains(client))
             {
                 _clients.Remove(client);
             }
@@ -47,12 +48,14 @@ namespace BroadcastCommunication
 
         public int AddClient(IWebSocketClient client)
         {
-            if (!_clients.ContainsKey(client))
+            this._clients.Add(client);
+            
+            if (!_sequenceIds.ContainsKey(client))
             {
-                _clients[client] = ++this.Sequence;
+                _sequenceIds[client] = ++this.Sequence;
             }
 
-            return _clients[client];
+            return _sequenceIds[client];
         }
     }
 }

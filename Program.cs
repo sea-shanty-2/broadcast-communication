@@ -7,7 +7,7 @@ namespace BroadcastCommunication
     {
         static void Main(string[] args)
         {
-            var server = new WebSocketServer("ws://0.0.0.0:4040")
+            var server = new WebSocketServer("ws://0.0.0.0:3333")
             {
                 RestartAfterListenError = true
             };

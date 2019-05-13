@@ -31,14 +31,14 @@ namespace BroadcastCommunication.Sockets
         }
 
 
-        public IChannel GetOrJoinChannel(string channel, IWebSocketClient requester)
+        public IChannel GetOrJoinChannel(string channelId, IWebSocketClient requester)
         {
-            if (!_channels.ContainsKey(channel))
+            if (!_channels.ContainsKey(channelId))
             {
-                _channels[channel] = new Channel(channel, requester);
+                _channels[channelId] = new Channel(channelId, requester);
             }
 
-            return _channels[channel];
+            return _channels[channelId];
         }
 
         public void Start()

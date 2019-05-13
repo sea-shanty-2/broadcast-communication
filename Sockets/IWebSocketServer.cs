@@ -8,7 +8,7 @@ namespace BroadcastCommunication.Sockets
         void Start();
         bool IsEmojiAllowed(string emoji);
         Polarity GetEmojiPolarity(string emoji);
-        IChannel GetOrJoinChannel(string channel, IWebSocketClient requester);
+        IChannel GetOrJoinChannel(string channelId, IWebSocketClient requester);
         ICollection<IChannel> Channels { get; }
     }
 }

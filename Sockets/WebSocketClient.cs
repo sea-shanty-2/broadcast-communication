@@ -77,7 +77,7 @@ namespace BroadcastCommunication.Sockets
 
             var emoji = jsonObject["Reaction"].Value<string>();
             if (!_server.IsEmojiAllowed(emoji) || DateTime.Now - time <= TimeSpan.FromMilliseconds(200)) return;
-            Channel.Broadcast(new ReactionPacket(emoji), new HashSet<IWebSocketClient> { this });
+            Channel?.Broadcast(new ReactionPacket(emoji), new HashSet<IWebSocketClient> { this });
             _channelPolarity[Channel] = _server.GetEmojiPolarity(emoji);
             _lastReaction[Channel] = DateTime.Now;
         }
@@ -88,20 +88,24 @@ namespace BroadcastCommunication.Sockets
             _lastChat.TryGetValue(Channel, out var time);
 
             if (DateTime.Now - time <= TimeSpan.FromMilliseconds(200)) return;
-            Channel.Broadcast(new MessagePacket(jsonObject["Message"].Value<string>(), this), new HashSet<IWebSocketClient> { this });
+            Channel?.Broadcast(new MessagePacket(jsonObject["Message"].Value<string>(), this), new HashSet<IWebSocketClient> { this });
             _lastChat[Channel] = DateTime.Now;
         }
 
         private void HandleIdentityPacket(JObject jsonObject)
         {
-            if (Channel != null)
-            {
-                Channel.RemoveClient(this);
-            }
+            Channel?.RemoveClient(this);
 
             Name = jsonObject["Name"].Value<string>();
-            Channel = this._server.GetOrJoinChannel(jsonObject["Channel"].Value<string>(), this);
+            Channel = _server.GetOrJoinChannel(jsonObject["Channel"].Value<string>(), this);
             SequenceId = Channel.AddClient(this);
+            
+            // Confirm client's identity
+            Socket.Send(JsonConvert.SerializeObject(new IdentityPacket()
+            {
+                SequenceId = SequenceId,
+                Name = Name
+            }));
         }
     }
 }
