@@ -14,7 +14,7 @@ namespace BroadcastCommunication.Sockets
         private readonly IDictionary<string, Polarity> _emojiPolarityMap;
         private readonly IDictionary<string, IChannel> _channels = new ConcurrentDictionary<string, IChannel>();
 
-        public ICollection<IChannel> Channels => _channels.Keys;
+        public ICollection<IChannel> Channels => _channels.Values;
         
         public WebSocketServer(string location, bool supportDualStack = true) : base(location, supportDualStack)
         {
