@@ -58,7 +58,7 @@ namespace BroadcastCommunication
                         Log.Error(ex, "BroadcastRatingsUpdate error.");
                     }     
                 }
-                Console.WriteLine($"BroadcastCommunication: {server.Channels.Count} ratings updated. {DateTime.Now.ToString()}");
+                //Console.WriteLine($"BroadcastCommunication: {server.Channels.Count} ratings updated. {DateTime.Now.ToString()}");
                 Thread.Sleep(10000);
             }
         }
