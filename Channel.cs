@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using BroadcastCommunication.Sockets;
 using BroadcastCommunication.Packet;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using System.Linq;
 
@@ -18,6 +20,22 @@ namespace BroadcastCommunication
         private int Sequence { get; set; }
         public int NegativeRatings => _ratings.Values.Count(v => v.Equals(Polarity.Negative));
         public int PositiveRatings => _ratings.Values.Count(v => v.Equals(Polarity.Positive));
+        
+
+        private bool _chatEnabled = true;
+        public bool ChatEnabled
+        {
+            get => _chatEnabled;
+            set
+            {
+                if (value != _chatEnabled)
+                {
+                    Broadcast(new ChatStatePacket() { Enabled =  value });
+                }
+                
+                _chatEnabled = value;
+            }
+        }
         
         public Channel(string id, IWebSocketClient owner)
         {
@@ -36,6 +54,11 @@ namespace BroadcastCommunication
             
             foreach (var client in _clients.Where(item => !excludedClients.Contains(item)))
                 client.Socket.Send(serialized);
+        }
+        
+        public void Broadcast(IPacket packet)
+        {
+            Broadcast(packet, ImmutableHashSet<IWebSocketClient>.Empty);
         }
 
         public void RemoveClient(IWebSocketClient client)
