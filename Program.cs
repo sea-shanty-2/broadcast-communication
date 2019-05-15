@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Globalization;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WebSocketServer = BroadcastCommunication.Sockets.WebSocketServer;
-using GraphQL.Client;
 using GraphQL.Client.Http;
 using GraphQL.Common.Request;
 using Serilog;
@@ -15,6 +11,11 @@ namespace BroadcastCommunication
 {
     class Program
     {
+        private const string query = "mutation BroadcastRatingsUpdate($id:ID!, $broadcast:BroadcastUpdateInputType!) " +
+                                     "{ broadcasts " +
+                                     "{ update(id: $id, broadcast: $broadcast) " +
+                                     "{ id positiveRatings negativeRatings } } }";
+        
         static async Task Main(string[] args)
         {
             var server = new WebSocketServer("ws://0.0.0.0:4040")
@@ -22,9 +23,8 @@ namespace BroadcastCommunication
                 RestartAfterListenError = true
             };
             server.Start();
-            
+
             var graphQlClient = new GraphQLHttpClient(Environment.GetEnvironmentVariable("API_URL"));
-            //Console.WriteLine("GraphQLHttpClient started");
             
             // Continuously send ratings to gateway
             while (true)
@@ -40,7 +40,7 @@ namespace BroadcastCommunication
                     var negRatings = channel.NegativeRatings;
 
                     var updateRequest = new GraphQLRequest(){
-                        Query = "mutation BroadcastRatingsUpdate($id:ID!, $broadcast:BroadcastUpdateInputType!){ broadcasts { update(id: $id, broadcast: $broadcast) { id positiveRatings negativeRatings } } }",
+                        Query = query,
                         OperationName = "BroadcastRatingsUpdate",
                         Variables = new {
                             id = cid,
