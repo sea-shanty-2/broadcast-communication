@@ -20,7 +20,6 @@ namespace BroadcastCommunication.Channel
         public int NegativeRatings => _ratings.Values.Count(v => v.Equals(Polarity.Negative));
         public int PositiveRatings => _ratings.Values.Count(v => v.Equals(Polarity.Positive));
         
-
         private bool _chatEnabled = true;
         public bool ChatEnabled
         {
