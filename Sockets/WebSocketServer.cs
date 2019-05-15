@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using BroadcastCommunication.Channel;
 using BroadcastCommunication.Packet;
 using Fleck;
 using J3QQ4;
@@ -35,7 +36,7 @@ namespace BroadcastCommunication.Sockets
         {
             if (!_channels.ContainsKey(channelId))
             {
-                _channels[channelId] = new Channel(channelId, requester);
+                _channels[channelId] = new Channel.Channel(channelId, requester);
             }
 
             return _channels[channelId];

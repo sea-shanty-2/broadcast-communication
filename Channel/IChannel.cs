@@ -1,8 +1,8 @@
-using BroadcastCommunication.Sockets;
-using BroadcastCommunication.Packet;
 using System.Collections.Generic;
+using BroadcastCommunication.Packet;
+using BroadcastCommunication.Sockets;
 
-namespace BroadcastCommunication
+namespace BroadcastCommunication.Channel
 {
     public interface IChannel
     {

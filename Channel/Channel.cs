@@ -1,18 +1,17 @@
 using System.Collections.Concurrent;
-using BroadcastCommunication.Sockets;
-using BroadcastCommunication.Packet;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using Newtonsoft.Json;
 using System.Linq;
+using BroadcastCommunication.Packet;
+using BroadcastCommunication.Sockets;
+using Newtonsoft.Json;
 
-namespace BroadcastCommunication
+namespace BroadcastCommunication.Channel
 {
     public class Channel : IChannel
     {
         private readonly ISet<IWebSocketClient> _clients = new HashSet<IWebSocketClient>();
-        private readonly IDictionary<IWebSocketClient, int> _sequenceIds = new ConcurrentDictionary<IWebSocketClient, int>();
+        private readonly IDictionary<string, int> _sequenceIds = new ConcurrentDictionary<string, int>();
         private readonly IDictionary<IWebSocketClient, Polarity> _ratings = new ConcurrentDictionary<IWebSocketClient, Polarity>();
         
         public string Id { get; }
@@ -76,12 +75,12 @@ namespace BroadcastCommunication
                 _clients.Add(client);
             }
             
-            if (!_sequenceIds.ContainsKey(client))
+            if (!_sequenceIds.ContainsKey(client.UniqueId))
             {
-                _sequenceIds[client] = this.Sequence++; // Owner is assigned id = 0
+                _sequenceIds[client.UniqueId] = Sequence++; // Owner is assigned id = 0
             }
 
-            return _sequenceIds[client];
+            return _sequenceIds[client.UniqueId];
         }
     }
 }

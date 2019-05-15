@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using BroadcastCommunication.Channel;
 using BroadcastCommunication.Packet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,6 +14,7 @@ namespace BroadcastCommunication.Sockets
         public string Name { get; private set; }
         public IChannel Channel { get; private set; }
         public int SequenceId { get; private set; }
+        public string UniqueId { get; private set; }
         private bool Identified => Name != null && Channel != null;
         public IWebSocketConnection Socket { get; }
 
@@ -75,9 +77,12 @@ namespace BroadcastCommunication.Sockets
             _lastReaction.TryGetValue(Channel, out var time);
 
             var emoji = jsonObject["Reaction"].Value<string>();
-            if (!_server.IsEmojiAllowed(emoji) || DateTime.Now - time <= TimeSpan.FromMilliseconds(200)) return;
+            if (string.IsNullOrWhiteSpace(emoji) || !_server.IsEmojiAllowed(emoji) ||
+                DateTime.Now - time <= TimeSpan.FromMilliseconds(200)) return;
+            
             Channel?.Broadcast(new ReactionPacket(emoji), new HashSet<IWebSocketClient> { this });
             Channel?.Rate(_server.GetEmojiPolarity(emoji), this);
+            
             _lastReaction[Channel] = DateTime.Now;
         }
 
@@ -86,8 +91,11 @@ namespace BroadcastCommunication.Sockets
             if (!Identified) return;
             _lastChat.TryGetValue(Channel, out var time);
 
-            if (DateTime.Now - time <= TimeSpan.FromMilliseconds(200)) return;
-            Channel?.Broadcast(new MessagePacket(jsonObject["Message"].Value<string>(), this), new HashSet<IWebSocketClient> { this });
+            var chatMessage = jsonObject["Message"].Value<string>();
+            if (DateTime.Now - time <= TimeSpan.FromMilliseconds(200) || string.IsNullOrWhiteSpace(chatMessage)) return;
+            
+            Channel?.Broadcast(new MessagePacket(chatMessage, this), new HashSet<IWebSocketClient> { this });
+            
             _lastChat[Channel] = DateTime.Now;
         }
 
@@ -96,7 +104,19 @@ namespace BroadcastCommunication.Sockets
             Channel?.RemoveClient(this);
 
             Name = jsonObject["Name"].Value<string>();
-            Channel = _server.GetOrJoinChannel(jsonObject["Channel"].Value<string>(), this);
+            UniqueId = jsonObject["UniqueId"].Value<string>();
+            var requestedChannel = jsonObject["Channel"].Value<string>();
+            
+            // Validate fields
+            if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(UniqueId) ||
+                string.IsNullOrWhiteSpace((requestedChannel)))
+            {
+                Socket.Close();
+                return;
+            }
+            
+            // Retrieve actual channel and sequence id
+            Channel = _server.GetOrJoinChannel(requestedChannel, this);
             SequenceId = Channel.AddClient(this);
             
             // Confirm client's identity
