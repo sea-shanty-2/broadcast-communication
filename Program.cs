@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Net.Http;
 using System.Text;
@@ -50,14 +50,18 @@ namespace BroadcastCommunication
                             }
                         }
                     };
-            
+
                     try
                     {
                         var response = await graphQlClient.SendMutationAsync(updateRequest);
                     }
-                    catch (GraphQL.Common.Exceptions.GraphQLException ex)
+                    catch (GraphQL.Client.Http.GraphQLHttpException ex)
                     {
                         Log.Error(ex, "BroadcastRatingsUpdate error.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Fatal(ex, "BroadcastCommunication: Unhandled exception.");
                     }
 
                     i++;
