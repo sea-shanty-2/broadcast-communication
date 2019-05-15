@@ -24,8 +24,6 @@ namespace BroadcastCommunication
                 RestartAfterListenError = true
             };
             server.Start();
-
-            var graphQlClient = new GraphQLHttpClient(Environment.GetEnvironmentVariable("API_URL"));
             
             // Continuously send ratings to gateway
             var graphQlClient = new GraphQLHttpClient(Environment.GetEnvironmentVariable("API_URL"));
