@@ -12,7 +12,7 @@ namespace BroadcastCommunication.Channel
     {
         private readonly ISet<IWebSocketClient> _clients = new HashSet<IWebSocketClient>();
         private readonly IDictionary<string, int> _sequenceIds = new ConcurrentDictionary<string, int>();
-        private readonly IDictionary<IWebSocketClient, Polarity> _ratings = new ConcurrentDictionary<IWebSocketClient, Polarity>();
+        private readonly IDictionary<string, Polarity> _ratings = new ConcurrentDictionary<string, Polarity>();
         
         public string Id { get; }
         public IWebSocketClient Owner { get; }
@@ -44,7 +44,7 @@ namespace BroadcastCommunication.Channel
         
         public void Rate(Polarity rating, IWebSocketClient rater)
         {
-            _ratings[rater] = rating;
+            _ratings[rater.UniqueId] = rating;
         }
 
         public void Broadcast(IPacket packet, ISet<IWebSocketClient> excludedClients)

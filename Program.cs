@@ -12,7 +12,7 @@ namespace BroadcastCommunication
 {
     class Program
     {
-        private const string query = "mutation BroadcastRatingsUpdate($id:ID!, $broadcast:BroadcastUpdateInputType!) " +
+        private const string Query = "mutation BroadcastRatingsUpdate($id:ID!, $broadcast:BroadcastUpdateInputType!) " +
                                      "{ broadcasts " +
                                      "{ update(id: $id, broadcast: $broadcast) " +
                                      "{ id positiveRatings negativeRatings } } }";
@@ -26,13 +26,13 @@ namespace BroadcastCommunication
             server.Start();
             
             // Continuously send ratings to gateway
-            var graphQlClient = new GraphQLHttpClient(Environment.GetEnvironmentVariable("API_URL"));
+            var apiClient = new GraphQLHttpClient(Environment.GetEnvironmentVariable("API_URL"));
             while (true)
             {
                 foreach (var channel in server.Channels)
                 {
                     var updateRequest = new GraphQLRequest(){
-                        Query = query,
+                        Query = Query,
                         OperationName = "BroadcastRatingsUpdate",
                         Variables = new {
                             id = channel.Id,
@@ -45,7 +45,7 @@ namespace BroadcastCommunication
 
                     try
                     {
-                        var response = await graphQlClient.SendMutationAsync(updateRequest);
+                        var response = await apiClient.SendMutationAsync(updateRequest);
                     }
                     catch (Exception ex)
                     {
