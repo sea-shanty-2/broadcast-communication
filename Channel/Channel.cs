@@ -14,7 +14,7 @@ namespace BroadcastCommunication.Channel
         private readonly ISet<IWebSocketClient> _clients = new HashSet<IWebSocketClient>();
         private readonly IDictionary<string, int> _sequenceIds = new ConcurrentDictionary<string, int>();
         private readonly IDictionary<string, Polarity> _ratings = new ConcurrentDictionary<string, Polarity>();
-        private readonly FixedSizedQueue<MessagePacket> _messages = new FixedSizedQueue<MessagePacket>(5);
+        private readonly FixedSizedQueue<MessagePacket> _messages = new FixedSizedQueue<MessagePacket>(10);
         
         public string Id { get; }
         public IWebSocketClient Owner { get; }
