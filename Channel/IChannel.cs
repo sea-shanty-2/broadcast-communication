@@ -10,8 +10,10 @@ namespace BroadcastCommunication.Channel
         int AddClient(IWebSocketClient client);
         void RemoveClient(IWebSocketClient client);
         void Broadcast(IPacket packet, ISet<IWebSocketClient> excludedClients);
-        void Rate(Polarity rating, IWebSocketClient rater);
-
+        void Rate(Polarity rating, IWebSocketClient user);
+        void SendMessage(string message, IWebSocketClient user);
+        void SendRecentMessages(IWebSocketClient user);
+        
         bool ChatEnabled { get; set; }
         
         int PositiveRatings { get; }

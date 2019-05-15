@@ -93,8 +93,8 @@ namespace BroadcastCommunication.Sockets
 
             var chatMessage = jsonObject["Message"].Value<string>();
             if (DateTime.Now - time <= TimeSpan.FromMilliseconds(200) || string.IsNullOrWhiteSpace(chatMessage)) return;
-            
-            Channel?.Broadcast(new MessagePacket(chatMessage, this), new HashSet<IWebSocketClient> { this });
+
+            Channel?.SendMessage(chatMessage, this);
             
             _lastChat[Channel] = DateTime.Now;
         }
@@ -125,6 +125,9 @@ namespace BroadcastCommunication.Sockets
                 SequenceId = SequenceId,
                 Name = Name
             }));
+            
+            // Send recent messages
+            Channel.SendRecentMessages(this);
             
             // If channel's chat is disabled, send to this chatter
             if (!Channel.ChatEnabled)

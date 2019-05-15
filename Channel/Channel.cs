@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using BroadcastCommunication.Packet;
 using BroadcastCommunication.Sockets;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace BroadcastCommunication.Channel
         private readonly ISet<IWebSocketClient> _clients = new HashSet<IWebSocketClient>();
         private readonly IDictionary<string, int> _sequenceIds = new ConcurrentDictionary<string, int>();
         private readonly IDictionary<string, Polarity> _ratings = new ConcurrentDictionary<string, Polarity>();
+        private readonly FixedSizedQueue<MessagePacket> _messages = new FixedSizedQueue<MessagePacket>(5);
         
         public string Id { get; }
         public IWebSocketClient Owner { get; }
@@ -21,6 +23,7 @@ namespace BroadcastCommunication.Channel
         public int PositiveRatings => _ratings.Values.Count(v => v.Equals(Polarity.Positive));
         
         private bool _chatEnabled = true;
+
         public bool ChatEnabled
         {
             get => _chatEnabled;
@@ -40,10 +43,26 @@ namespace BroadcastCommunication.Channel
             Id = id;
             Owner = owner;
         }
+
         
-        public void Rate(Polarity rating, IWebSocketClient rater)
+        public void SendMessage(string message, IWebSocketClient user)
         {
-            _ratings[rater.UniqueId] = rating;
+            var messagePacket = new MessagePacket(message, user);
+            Broadcast(messagePacket, new HashSet<IWebSocketClient> { user });
+            _messages.Enqueue(messagePacket);
+        }
+        
+        public void SendRecentMessages(IWebSocketClient user)
+        {
+            foreach (var message in _messages)
+            {
+                user.Socket.Send(JsonConvert.SerializeObject(message));
+            }
+        }
+        
+        public void Rate(Polarity rating, IWebSocketClient user)
+        {
+            _ratings[user.UniqueId] = rating;
         }
 
         public void Broadcast(IPacket packet, ISet<IWebSocketClient> excludedClients)
@@ -53,8 +72,8 @@ namespace BroadcastCommunication.Channel
             foreach (var client in _clients.Where(item => !excludedClients.Contains(item)))
                 client.Socket.Send(serialized);
         }
-        
-        public void Broadcast(IPacket packet)
+
+        private void Broadcast(IPacket packet)
         {
             Broadcast(packet, ImmutableHashSet<IWebSocketClient>.Empty);
         }
@@ -76,7 +95,7 @@ namespace BroadcastCommunication.Channel
             
             if (!_sequenceIds.ContainsKey(client.UniqueId))
             {
-                _sequenceIds[client.UniqueId] = Sequence++; // Owner is assigned id = 0
+                _sequenceIds[client.UniqueId] = Sequence++;
             }
 
             return _sequenceIds[client.UniqueId];
