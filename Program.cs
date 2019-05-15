@@ -24,10 +24,12 @@ namespace BroadcastCommunication
             server.Start();
             
             var graphQlClient = new GraphQLHttpClient("https://envue.me/api");
-            Console.WriteLine("GraphQLHttpClient started");
+            //Console.WriteLine("GraphQLHttpClient started");
+            
             // Continuously send ratings to gateway
             while (true)
             {
+                var i = 0;
                 foreach (var channel in server.Channels)
                 {
                     // channel.Id
@@ -56,9 +58,11 @@ namespace BroadcastCommunication
                     catch (GraphQL.Common.Exceptions.GraphQLException ex)
                     {
                         Log.Error(ex, "BroadcastRatingsUpdate error.");
-                    }     
+                    }
+
+                    i++;
                 }
-                //Console.WriteLine($"BroadcastCommunication: {server.Channels.Count} ratings updated. {DateTime.Now.ToString()}");
+                Log.Debug($"BroadcastCommunication: {i} ratings updated. {DateTime.Now.ToString()}");
                 Thread.Sleep(10000);
             }
         }
