@@ -63,6 +63,7 @@ namespace BroadcastCommunication
                     {
                         Log.Error(ex, "BroadcastCommunication: Unhandled exception.");
                     }
+                    Log.Error($"BroadcastRatingsUpdate: Id: {cid}, Pos: {posRatings}, Neg: {negRatings}");
 
                     i++;
                 }
