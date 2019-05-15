@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using BroadcastCommunication.Channel;
 using BroadcastCommunication.Packet;
 
 namespace BroadcastCommunication.Sockets
