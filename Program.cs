@@ -61,12 +61,12 @@ namespace BroadcastCommunication
                     }
                     catch (Exception ex)
                     {
-                        Log.Fatal(ex, "BroadcastCommunication: Unhandled exception.");
+                        Log.Error(ex, "BroadcastCommunication: Unhandled exception.");
                     }
 
                     i++;
                 }
-                Log.Debug($"BroadcastCommunication: {i} ratings updated. {DateTime.Now.ToString()}");
+                Log.Error($"BroadcastCommunication: {i} ratings updated. {DateTime.Now.ToString()}");
                 Thread.Sleep(10000);
             }
         }
