@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Net.Http;
 using System.Text;
@@ -23,7 +23,7 @@ namespace BroadcastCommunication
             };
             server.Start();
             
-            var graphQlClient = new GraphQLHttpClient("https://envue.me/api");
+            var graphQlClient = new GraphQLHttpClient(Environment.GetEnvironmentVariable("API_URL"));
             //Console.WriteLine("GraphQLHttpClient started");
             
             // Continuously send ratings to gateway
