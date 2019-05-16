@@ -17,9 +17,7 @@ namespace BroadcastCommunication.Sockets
         public string UniqueId { get; private set; }
         private bool Identified => Name != null && Channel != null;
         public IWebSocketConnection Socket { get; }
-
-        private readonly ConcurrentDictionary<IChannel, DateTime> _lastReaction;
-        private readonly ConcurrentDictionary<IChannel, DateTime> _lastChat;
+        
         private readonly IWebSocketServer _server;
 
         public WebSocketClient(IWebSocketServer webSocketServer, IWebSocketConnection socket)
@@ -27,10 +25,13 @@ namespace BroadcastCommunication.Sockets
             Socket = socket;
 
             _server = webSocketServer;
-            _lastReaction = new ConcurrentDictionary<IChannel, DateTime>();
-            _lastChat = new ConcurrentDictionary<IChannel, DateTime>();
         }
 
+        public void HandleClose()
+        {
+            Channel?.RemoveClient(this);
+        }
+        
         public void HandleMessage(string message)
         {
             try
@@ -73,30 +74,18 @@ namespace BroadcastCommunication.Sockets
 
         private void HandleReactionPacket(JObject jsonObject)
         {
-            if (!Identified) return;
-            _lastReaction.TryGetValue(Channel, out var time);
-
             var emoji = jsonObject["Reaction"].Value<string>();
-            if (string.IsNullOrWhiteSpace(emoji) || !_server.IsEmojiAllowed(emoji) ||
-                DateTime.Now - time <= TimeSpan.FromMilliseconds(200)) return;
+            if (!Identified || string.IsNullOrWhiteSpace(emoji)) return;
             
-            Channel?.Broadcast(new ReactionPacket(emoji), new HashSet<IWebSocketClient> { this });
-            Channel?.Rate(_server.GetEmojiPolarity(emoji), this);
-            
-            _lastReaction[Channel] = DateTime.Now;
+            Channel?.Rate(emoji, this);
         }
 
         private void HandleChatPacket(JObject jsonObject)
         {
-            if (!Identified) return;
-            _lastChat.TryGetValue(Channel, out var time);
-
             var chatMessage = jsonObject["Message"].Value<string>();
-            if (DateTime.Now - time <= TimeSpan.FromMilliseconds(200) || string.IsNullOrWhiteSpace(chatMessage)) return;
-            
-            Channel?.Broadcast(new MessagePacket(chatMessage, this), new HashSet<IWebSocketClient> { this });
-            
-            _lastChat[Channel] = DateTime.Now;
+            if (!Identified || string.IsNullOrWhiteSpace(chatMessage)) return;
+
+            Channel?.SendMessage(chatMessage, this);
         }
 
         private void HandleIdentityPacket(JObject jsonObject)
@@ -125,6 +114,9 @@ namespace BroadcastCommunication.Sockets
                 SequenceId = SequenceId,
                 Name = Name
             }));
+            
+            // Send recent messages
+            Channel.SendRecentMessages(this);
             
             // If channel's chat is disabled, send to this chatter
             if (!Channel.ChatEnabled)

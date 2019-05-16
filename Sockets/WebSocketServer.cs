@@ -25,9 +25,12 @@ namespace BroadcastCommunication.Sockets
                 { Emoji.Joy, Polarity.Positive},
                 { Emoji.Thumbsup, Polarity.Positive},
                 { Emoji.Heart, Polarity.Positive},
-                { Emoji.Eggplant, Polarity.Positive},
+                { Emoji.Tada, Polarity.Positive},
                 { Emoji.Angry, Polarity.Negative},
                 { Emoji.Thumbsdown, Polarity.Negative},
+                { Emoji.Confused, Polarity.Negative},
+                { Emoji.Eggplant, Polarity.Neutral},
+                { Emoji.Eyes, Polarity.Neutral},
             };
         }
 
@@ -35,9 +38,7 @@ namespace BroadcastCommunication.Sockets
         public IChannel GetOrJoinChannel(string channelId, IWebSocketClient requester)
         {
             if (!_channels.ContainsKey(channelId))
-            {
-                _channels[channelId] = new Channel.Channel(channelId, requester);
-            }
+                _channels[channelId] = new Channel.Channel(channelId, requester, this);
 
             return _channels[channelId];
         }
@@ -46,7 +47,6 @@ namespace BroadcastCommunication.Sockets
         {
             base.Start(socket =>
             {
-                socket.OnClose = () => ConnectionClosed(socket);
                 socket.OnOpen = () => ConnectionOpened(socket);
             });
         }
@@ -58,8 +58,7 @@ namespace BroadcastCommunication.Sockets
 
         public Polarity GetEmojiPolarity(string emoji)
         {
-            if (!IsEmojiAllowed(emoji))
-                throw new EmojiNotAllowedException(emoji);
+            if (!IsEmojiAllowed(emoji)) throw new EmojiNotAllowedException(emoji);
 
             return _emojiPolarityMap[emoji];
         }
@@ -68,11 +67,7 @@ namespace BroadcastCommunication.Sockets
         {
             var client = new WebSocketClient(this, socket);
             socket.OnMessage = client.HandleMessage;
-        }
-
-        private void ConnectionClosed(IWebSocketConnection socket)
-        {
-            // TODO: Delete from channel?
+            socket.OnClose = client.HandleClose;
         }
     }
 }
