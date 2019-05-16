@@ -10,7 +10,7 @@ namespace BroadcastCommunication.Channel
         int AddClient(IWebSocketClient client);
         void RemoveClient(IWebSocketClient client);
         void Broadcast(IPacket packet, ISet<IWebSocketClient> excludedClients);
-        void Rate(Polarity rating, IWebSocketClient user);
+        void Rate(string emoji, IWebSocketClient user);
         void SendMessage(string message, IWebSocketClient user);
         void SendRecentMessages(IWebSocketClient user);
         

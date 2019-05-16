@@ -10,5 +10,6 @@ namespace BroadcastCommunication.Sockets
         IChannel Channel { get; }
         IWebSocketConnection Socket { get; }
         int SequenceId { get; }
+        void HandleClose();
     }
 }
