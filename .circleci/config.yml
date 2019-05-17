@@ -1,0 +1,31 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: microsoft/dotnet:sdk
+    steps:
+      - checkout
+      - run: find .
+      - run: dotnet restore
+      - run: dotnet build
+
+  deploy:
+    machine:
+      enabled: true
+    steps:
+      - checkout
+      - run: docker build -t envue/communication .
+      - run: docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASS}
+      - run: docker push envue/communication
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+         requires:
+           - build
+         filters:
+           branches:
+             only: master
