@@ -69,7 +69,9 @@ namespace BroadcastCommunication
             }, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10));
 
             // Keep the service running
-            while(true) {}
+            while(true) {
+                Thread.Sleep(TimeSpan.FromSeconds(10));
+            }
         }
     }
 }
