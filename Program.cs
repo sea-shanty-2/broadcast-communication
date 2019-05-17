@@ -31,10 +31,12 @@ namespace BroadcastCommunication
             {
                 RestartAfterListenError = true
             };
+
             server.Start();
 
             // Send ratings to gateway every 10 seconds
             var apiClient = new GraphQLHttpClient(Environment.GetEnvironmentVariable("API_URL"));
+            
             var timer = new Timer((object stateInfo) =>
             {
                 foreach (var channel in server.Channels)
@@ -65,6 +67,9 @@ namespace BroadcastCommunication
                     }
                 }
             }, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10));
+
+            // Keep the service running
+            while(true) {}
         }
     }
 }
