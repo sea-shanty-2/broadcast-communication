@@ -5,39 +5,50 @@ using Fleck;
 using WebSocketServer = BroadcastCommunication.Sockets.WebSocketServer;
 using GraphQL.Client.Http;
 using GraphQL.Common.Request;
-using Serilog;
-
 
 namespace BroadcastCommunication
 {
     class Program
     {
-        private const string Query = "mutation BroadcastRatingsUpdate($id:ID!, $broadcast:BroadcastUpdateInputType!) " +
-                                     "{ broadcasts " +
-                                     "{ update(id: $id, broadcast: $broadcast) " +
-                                     "{ id positiveRatings negativeRatings } } }";
-        
-        static async Task Main(string[] args)
+        private const string Query = 
+        @"mutation BroadcastRatingsUpdate(
+        $id: ID!
+        $broadcast: BroadcastUpdateInputType!
+        $activity: Boolean
+        ) {
+        broadcasts {
+            update(id: $id, activity: $activity, broadcast: $broadcast) {
+            id
+            positiveRatings
+            negativeRatings
+            }
+        }
+        }";
+
+        static void Main(string[] args)
         {
             var server = new WebSocketServer("ws://0.0.0.0:4040")
             {
                 RestartAfterListenError = true
             };
             server.Start();
-            
-            // Continuously send ratings to gateway
+
+            // Send ratings to gateway every 10 seconds
             var apiClient = new GraphQLHttpClient(Environment.GetEnvironmentVariable("API_URL"));
-            while (true)
+            var timer = new Timer((object stateInfo) =>
             {
                 foreach (var channel in server.Channels)
                 {
-                    var updateRequest = new GraphQLRequest(){
+                    var updateRequest = new GraphQLRequest()
+                    {
                         Query = Query,
                         OperationName = "BroadcastRatingsUpdate",
-                        Variables = new {
+                        Variables = new
+                        {
                             id = channel.Id,
                             activity = false,
-                            broadcast = new {
+                            broadcast = new
+                            {
                                 positiveRatings = channel.PositiveRatings,
                                 negativeRatings = channel.NegativeRatings
                             }
@@ -46,16 +57,14 @@ namespace BroadcastCommunication
 
                     try
                     {
-                        var response = await apiClient.SendMutationAsync(updateRequest);
+                        apiClient.SendMutationAsync(updateRequest).Wait();
                     }
                     catch (Exception ex)
                     {
                         FleckLog.Error($"BroadcastRatingsUpdate error: {ex}");
                     }
                 }
-                
-                Thread.Sleep(10000);
-            }
+            }, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10));
         }
     }
 }
