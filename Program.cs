@@ -36,6 +36,7 @@ namespace BroadcastCommunication
                         OperationName = "BroadcastRatingsUpdate",
                         Variables = new {
                             id = channel.Id,
+                            activity = false,
                             broadcast = new {
                                 positiveRatings = channel.PositiveRatings,
                                 negativeRatings = channel.NegativeRatings
