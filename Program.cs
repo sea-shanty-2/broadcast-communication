@@ -60,7 +60,7 @@ namespace BroadcastCommunication
                     try
                     {
                         apiClient.SendMutationAsync(updateRequest).Wait();
-                        FleckLog.Debug($"Broadcast {channel.Id} rating updated");
+                        FleckLog.Info($"Broadcast {channel.Id} rating updated");
                     }
                     catch (Exception ex)
                     {
