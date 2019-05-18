@@ -37,10 +37,8 @@ namespace BroadcastCommunication
             // Send ratings to gateway every 10 seconds
             var apiClient = new GraphQLHttpClient(Environment.GetEnvironmentVariable("API_URL"));
             
-            var timer = new Timer((object stateInfo) =>
-            {
-                FleckLog.Info($"Ratings update task started");
-
+            while(true) {
+                
                 foreach (var channel in server.Channels)
                 {
                     var updateRequest = new GraphQLRequest()
@@ -69,10 +67,7 @@ namespace BroadcastCommunication
                         FleckLog.Error($"Broadcast rating update error: {ex}");
                     }
                 }
-            }, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10));
 
-            // Keep the service running
-            while(true) {
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }
         }
