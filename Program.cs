@@ -39,6 +39,8 @@ namespace BroadcastCommunication
             
             var timer = new Timer((object stateInfo) =>
             {
+                FleckLog.Info($"Ratings update task started");
+
                 foreach (var channel in server.Channels)
                 {
                     var updateRequest = new GraphQLRequest()
@@ -60,10 +62,11 @@ namespace BroadcastCommunication
                     try
                     {
                         apiClient.SendMutationAsync(updateRequest).Wait();
+                        FleckLog.Debug($"Broadcast {channel.Id} rating updated");
                     }
                     catch (Exception ex)
                     {
-                        FleckLog.Error($"BroadcastRatingsUpdate error: {ex}");
+                        FleckLog.Error($"Broadcast rating update error: {ex}");
                     }
                 }
             }, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10));
