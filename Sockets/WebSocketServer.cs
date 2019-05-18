@@ -31,6 +31,8 @@ namespace BroadcastCommunication.Sockets
                 { Emoji.Confused, Polarity.Negative},
                 { Emoji.Eggplant, Polarity.Neutral},
                 { Emoji.Eyes, Polarity.Neutral},
+                { Emoji.Question, Polarity.Neutral},
+                { Emoji.X, Polarity.Neutral}
             };
         }
 
